@@ -7,4 +7,4 @@ cache:
 script:
   - npm i
   - npm run lint
-  - npm build
+  - npm run build

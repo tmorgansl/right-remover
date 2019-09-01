@@ -29,5 +29,11 @@
   "permissions": [
     "storage",
     "<all_urls>"
-  ]
+  ],
+
+  "applications": {
+    "gecko": {
+      "id": "right-remover@example.com"
+    }
+  }
 }
