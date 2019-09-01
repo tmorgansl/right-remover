@@ -1,8 +1,5 @@
 // import * as browser from 'webextension-polyfill';
 
-
-console.log('called');
-
 function listener(details): Object {
     let filter = browser.webRequest.filterResponseData(details.requestId);
     let decoder = new TextDecoder("utf-8");
@@ -11,12 +8,17 @@ function listener(details): Object {
     console.log('called');
 
     filter.ondata = event => {
-        let str = decoder.decode(event.data, {stream: true});
+        const str = decoder.decode(event.data, {stream: true});
+        console.log(str);
+        // const body = JSON.parse(str);
+        // const body = JSON.parse(decoder.decode(event.data, {stream: true}));
+        // console.log('data');
         // Just change any instance of Example in the HTTP response
         // to WebExtension Example.
         // str = str.replace(/Example/g, 'WebExtension Example');
-        console.log(str);
-        filter.write(encoder.encode(str));
+        // body.properties = [];
+        // console.log(body);
+        filter.write(event.data);
         filter.disconnect();
     };
 
@@ -25,8 +27,6 @@ function listener(details): Object {
 
 browser.webRequest.onBeforeRequest.addListener(
   listener,
-  {urls: ["https://www.rightmove.co.uk/api/_mapSearch*"], types: ["main_frame"]},
+  {urls: ["https://www.rightmove.co.uk/api/_mapSearch*"]},
   ["blocking"]
 );
-
-console.log('registered');

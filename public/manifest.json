@@ -23,14 +23,15 @@
   ],
 
   "background": {
-    "scripts": ["js/vendor.js", "js/background.js"]
+    "scripts": ["js/vendor.js", "js/background.js"],
+    "persistent": true
   },
 
   "permissions": [
     "storage",
     "webRequest",
     "webRequestBlocking",
-    "<all_urls>"
+    "https://www.rightmove.co.uk/*"
   ],
 
   "applications": {
