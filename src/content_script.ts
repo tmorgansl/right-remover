@@ -28,6 +28,40 @@ const getAddress = (): string => {
 const url = new Url(document.documentURI);
 const pageType = getPageType(url);
 
+// https://www.rightmove.co.uk/api/_mapSearch?locationIdentifier=REGION%5E25570&numberOfPropertiesPerPage=499&radius=0.0&sortType=2&index=0&includeSSTC=false&viewType=MAP&channel=BUY&areaSizeUnit=sqft&currencyCode=GBP&viewport=-2.43206%2C-2.27301%2C53.4370%2C53.4495&isFetching=false
+// https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/webRequest/filterResponseData
+// setTimeout(() => {
+//    const listeners = (function listAllEventListeners() {
+//       let elements = [];
+//       const allElements = document.querySelectorAll('*');
+//       const types = [];
+//       for (let ev in window) {
+//          if (/^on/.test(ev)) types[types.length] = ev;
+//       }
+//
+//       for (let i = 0; i < allElements.length; i++) {
+//          const currentElement = allElements[i];
+//          for (let j = 0; j < types.length; j++) {
+//             if (typeof currentElement[types[j]] === 'function') {
+//                elements.push({
+//                   "node": currentElement,
+//                   "listeners": [ {
+//                      "type": types[j],
+//                      "func": currentElement[types[j]].toString(),
+//                   }]
+//                });
+//             }
+//          }
+//       }
+//
+//       return elements.filter(element => element.listeners.length)
+//    })();
+//
+//    console.table(listeners);
+// }, 5000);
+
+console.log('content_script');
+
 if (pageType == PageType.SINGLE_PROPERTY) {
    const propertyID = getPropertyID(url);
    const propertyActions = document.querySelector(".property-actions");
