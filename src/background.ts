@@ -1,24 +1,48 @@
-// import * as browser from 'webextension-polyfill';
+import {getProperties} from "./storage";
 
-function listener(details): Object {
-    let filter = browser.webRequest.filterResponseData(details.requestId);
-    let decoder = new TextDecoder("utf-8");
-    let encoder = new TextEncoder();
+interface ApiProperty {
+    id: number;
+}
 
-    console.log('called');
+const filterProperties = async (properties: Array<ApiProperty>): Promise<Array<ApiProperty>> => {
+    const propertyStore = await getProperties();
+    return properties.filter(p => !(p.id in propertyStore));
+};
 
-    filter.ondata = event => {
-        const str = decoder.decode(event.data, {stream: true});
-        console.log(str);
-        // const body = JSON.parse(str);
-        // const body = JSON.parse(decoder.decode(event.data, {stream: true}));
-        // console.log('data');
-        // Just change any instance of Example in the HTTP response
-        // to WebExtension Example.
-        // str = str.replace(/Example/g, 'WebExtension Example');
-        // body.properties = [];
-        // console.log(body);
-        filter.write(event.data);
+function mapListener(details): Record<string, any> {
+    const filter = browser.webRequest.filterResponseData(details.requestId);
+    const decoder = new TextDecoder("utf-8");
+    const encoder = new TextEncoder();
+
+    let str = '';
+
+    filter.ondata = (event): void => {
+        str += decoder.decode(event.data, {stream: false});
+    };
+
+    filter.onstop = async (): Promise<void> => {
+        const body = JSON.parse(str);
+        body.properties = await filterProperties(body.properties);
+        filter.write(encoder.encode(JSON.stringify(body)));
+        filter.disconnect();
+    };
+
+    return {};
+}
+
+function searchListener(details): Record<string, any> {
+    const filter = browser.webRequest.filterResponseData(details.requestId);
+    const decoder = new TextDecoder("utf-8");
+    const encoder = new TextEncoder();
+
+    let str = '';
+    filter.ondata = (event): void => {
+        str += decoder.decode(event.data, {stream: false});
+    };
+
+    filter.onstop = async (): Promise<void> => {
+        const body = await filterProperties(JSON.parse(str));
+        filter.write(encoder.encode(JSON.stringify(body)));
         filter.disconnect();
     };
 
@@ -26,7 +50,13 @@ function listener(details): Object {
 }
 
 browser.webRequest.onBeforeRequest.addListener(
-  listener,
+  mapListener,
   {urls: ["https://www.rightmove.co.uk/api/_mapSearch*"]},
+  ["blocking"]
+);
+
+browser.webRequest.onBeforeRequest.addListener(
+  searchListener,
+  {urls: ["https://www.rightmove.co.uk/api/_searchByIds*"]},
   ["blocking"]
 );

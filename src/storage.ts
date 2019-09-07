@@ -14,7 +14,7 @@ const getAllPropertiesFromStorage = async (): Promise<PropertyStore> => {
   })
 };
 
-const getProperties = async (): Promise<PropertyStore> => {
+export const getProperties = async (): Promise<PropertyStore> => {
   if (propertyStore == null) {
     // eslint-disable-next-line require-atomic-updates
     propertyStore = await getAllPropertiesFromStorage()
