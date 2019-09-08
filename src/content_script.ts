@@ -1,6 +1,35 @@
 import * as Url from 'url-parse';
 import {PageType, Property} from "./types";
-import {saveBlockedProperty} from "./storage";
+import { getProperties, saveBlockedProperty} from "./storage";
+
+getProperties().then((p) => {
+   new MutationObserver(function (mutations): void {
+      mutations.some(function (mutation) {
+         if (mutation.type === 'childList') {
+            return Array.prototype.some.call(mutation.addedNodes, function (addedNode) {
+               if (addedNode.localName === 'script' && addedNode.textContent.includes('window.jsonModel')) {
+                  const textContent = `var badProperties = ${JSON.stringify(p)};
+     window.jsonModel.properties = window.jsonModel.properties.filter(function(p) {
+      return !(p.id in badProperties);
+     });`;
+                  addedNode.textContent += ";" + textContent;
+                  return true;
+               }
+
+               return false;
+            });
+         }
+         return false;
+      });
+   }).observe(document, {
+      attributes: false,
+      attributeOldValue: false,
+      characterData: false,
+      characterDataOldValue: false,
+      childList: true,
+      subtree: true
+   });
+});
 
 const getPageType = (url: Url): PageType => {
    if (url.pathname.includes('property-') && url.pathname.endsWith('.html')) {
@@ -25,62 +54,32 @@ const getAddress = (): string => {
    return text.replace(/\n/g, ' ');
 };
 
-const url = new Url(document.documentURI);
-const pageType = getPageType(url);
+document.addEventListener('DOMContentLoaded', function onDOMContentLoaded() {
+   const url = new Url(document.documentURI);
+   const pageType = getPageType(url);
 
-// https://www.rightmove.co.uk/api/_mapSearch?locationIdentifier=REGION%5E25570&numberOfPropertiesPerPage=499&radius=0.0&sortType=2&index=0&includeSSTC=false&viewType=MAP&channel=BUY&areaSizeUnit=sqft&currencyCode=GBP&viewport=-2.43206%2C-2.27301%2C53.4370%2C53.4495&isFetching=false
-// https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/webRequest/filterResponseData
-// setTimeout(() => {
-//    const listeners = (function listAllEventListeners() {
-//       let elements = [];
-//       const allElements = document.querySelectorAll('*');
-//       const types = [];
-//       for (let ev in window) {
-//          if (/^on/.test(ev)) types[types.length] = ev;
-//       }
-//
-//       for (let i = 0; i < allElements.length; i++) {
-//          const currentElement = allElements[i];
-//          for (let j = 0; j < types.length; j++) {
-//             if (typeof currentElement[types[j]] === 'function') {
-//                elements.push({
-//                   "node": currentElement,
-//                   "listeners": [ {
-//                      "type": types[j],
-//                      "func": currentElement[types[j]].toString(),
-//                   }]
-//                });
-//             }
-//          }
-//       }
-//
-//       return elements.filter(element => element.listeners.length)
-//    })();
-//
-//    console.table(listeners);
-// }, 5000);
+   if (pageType == PageType.SINGLE_PROPERTY) {
+      const propertyID = getPropertyID(url);
+      const propertyActions = document.querySelector(".property-actions");
+      const removeProperty = document.createElement("li");
+      const hidePropertyElement = document.createElement("a");
+      hidePropertyElement.textContent = "Hide Property";
+      removeProperty.className = "bdr-b";
+      removeProperty.appendChild(hidePropertyElement);
+      removeProperty.style["border-bottom"] = "1px dashed #dfdfe1";
+      propertyActions.insertBefore(removeProperty, propertyActions.children[1]);
 
-console.log('content_script');
+      hidePropertyElement.addEventListener('click', async (): Promise<void> => {
+         const propertyDetails: Property = {
+            url: url.toString(),
+            address: getAddress(),
+         };
+         await saveBlockedProperty(propertyID, propertyDetails);
+      });
+   }
+}, true);
 
-if (pageType == PageType.SINGLE_PROPERTY) {
-   const propertyID = getPropertyID(url);
-   const propertyActions = document.querySelector(".property-actions");
-   const removeProperty = document.createElement("li");
-   const hidePropertyElement = document.createElement("a");
-   hidePropertyElement.textContent = "Hide Property";
-   removeProperty.className = "bdr-b";
-   removeProperty.appendChild(hidePropertyElement);
-   removeProperty.style["border-bottom"] = "1px dashed #dfdfe1";
-   propertyActions.insertBefore(removeProperty, propertyActions.children[1]);
 
-   hidePropertyElement.addEventListener('click', async (): Promise<void> => {
-      const propertyDetails: Property = {
-        url: url.toString(),
-        address: getAddress(),
-      };
-      await saveBlockedProperty(propertyID, propertyDetails);
-   });
-}
 
 
 

@@ -18,6 +18,7 @@
   "content_scripts": [
       {
         "matches": ["https://www.rightmove.co.uk/*"],
+        "run_at": "document_start",
         "js": ["js/vendor.js", "js/content_script.js"]
       }
   ],
