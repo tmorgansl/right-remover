@@ -3,6 +3,8 @@
 // OTHER - a catch all for pages we can't recognise/don't care about
 export enum PageType {
   SINGLE_PROPERTY ,
+  MAP,
+  LIST,
   OTHER
 }
 

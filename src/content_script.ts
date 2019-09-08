@@ -1,6 +1,6 @@
 import * as Url from 'url-parse';
 import {PageType, Property} from "./types";
-import { getProperties, saveBlockedProperty} from "./storage";
+import {getProperties, saveBlockedProperty} from "./storage";
 
 getProperties().then((p) => {
    new MutationObserver(function (mutations): void {
@@ -32,6 +32,12 @@ getProperties().then((p) => {
 });
 
 const getPageType = (url: Url): PageType => {
+   if (url.pathname.endsWith('map.html')) {
+      return PageType.MAP;
+   }
+   if (url.pathname.endsWith('find.html')) {
+      return PageType.LIST;
+   }
    if (url.pathname.includes('property-') && url.pathname.endsWith('.html')) {
       return PageType.SINGLE_PROPERTY;
    }
