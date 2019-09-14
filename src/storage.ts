@@ -25,10 +25,18 @@ export const getProperties = async (): Promise<PropertyStore> => {
 export const saveBlockedProperty = async (propertyID: number, propertyDetails: Property): Promise<void> => {
   const properties: PropertyStore = await getProperties();
   properties[propertyID] = propertyDetails;
-  console.log(properties);
-  browser.storage.sync.set({properties})
+  browser.storage.sync.set({properties});
 };
 
+export const clearProperty = async (propertyID: number): Promise<void> => {
+  const properties: PropertyStore = await getProperties();
+  delete properties[propertyID];
+  browser.storage.sync.set({properties});
+};
+
+export const clearAllProperties = async (): Promise<void> => {
+  browser.storage.sync.set({properties: {}});
+};
 
 
 

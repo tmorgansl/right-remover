@@ -15,4 +15,5 @@ export interface PropertyStore {
 export interface Property {
   address: string;
   url: string;
+  imgUrl: string;
 }

@@ -53,11 +53,19 @@ const getPropertyID = (url: Url): number => {
 };
 
 const getAddress = (): string => {
-   const text = document.querySelector('address').textContent;
+   const text = document.querySelector('.property-header-bedroom-and-price').querySelector('address').textContent;
    if (text == null) {
       return "invalid_address"
    }
    return text.replace(/\n/g, ' ');
+};
+
+const getImgUrl = (): string => {
+  const url = document.querySelector('.js-gallery-main').getAttribute('src');
+  if (url == null) {
+     return 'https://img.icons8.com/officel/40/000000/cottage.png'
+  }
+  return url;
 };
 
 document.addEventListener('DOMContentLoaded', function onDOMContentLoaded() {
@@ -79,6 +87,7 @@ document.addEventListener('DOMContentLoaded', function onDOMContentLoaded() {
          const propertyDetails: Property = {
             url: url.toString(),
             address: getAddress(),
+            imgUrl: getImgUrl(),
          };
          await saveBlockedProperty(propertyID, propertyDetails);
       });
