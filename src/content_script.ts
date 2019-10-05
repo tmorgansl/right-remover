@@ -1,6 +1,9 @@
 import * as Url from 'url-parse';
 import {PageType, Property} from "./types";
-import {getProperties, saveBlockedProperty} from "./storage";
+import {clearProperty, getProperties, saveBlockedProperty} from "./storage";
+
+const HIDE_PROPERTY = "Hide Property";
+const SHOW_PROPERTY = "Show Property";
 
 getProperties().then((p) => {
    new MutationObserver(function (mutations): void {
@@ -68,7 +71,7 @@ const getImgUrl = (): string => {
   return url;
 };
 
-document.addEventListener('DOMContentLoaded', function onDOMContentLoaded() {
+document.addEventListener('DOMContentLoaded', async (): Promise<void> => {
    const url = new Url(document.documentURI);
    const pageType = getPageType(url);
 
@@ -77,19 +80,36 @@ document.addEventListener('DOMContentLoaded', function onDOMContentLoaded() {
       const propertyActions = document.querySelector(".property-actions");
       const removeProperty = document.createElement("li");
       const hidePropertyElement = document.createElement("a");
-      hidePropertyElement.textContent = "Hide Property";
       removeProperty.className = "bdr-b";
       removeProperty.appendChild(hidePropertyElement);
       removeProperty.style["border-bottom"] = "1px dashed #dfdfe1";
       propertyActions.insertBefore(removeProperty, propertyActions.children[1]);
 
+
+      const properties = await getProperties();
+      let isHidden = false;
+      if (propertyID in properties) {
+         isHidden = true;
+      }
+
+      hidePropertyElement.textContent =  (isHidden) ? SHOW_PROPERTY : HIDE_PROPERTY;
+
       hidePropertyElement.addEventListener('click', async (): Promise<void> => {
+         if (isHidden) {
+            await clearProperty(propertyID);
+            isHidden = false;
+            hidePropertyElement.textContent = HIDE_PROPERTY;
+            return;
+         }
+
          const propertyDetails: Property = {
             url: url.toString(),
             address: getAddress(),
             imgUrl: getImgUrl(),
          };
          await saveBlockedProperty(propertyID, propertyDetails);
+         isHidden= true;
+         hidePropertyElement.textContent = SHOW_PROPERTY;
       });
    }
 }, true);
