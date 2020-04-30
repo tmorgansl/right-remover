@@ -17,7 +17,7 @@
     "url": "https://github.com/chibat/chrome-extension-typescript-starter.git"
   },
   "dependencies": {
-    "jquery": "^3.4.1",
+    "jquery": "^3.5.0",
     "moment": "~2.24.0",
     "url-parse": "^1.4.7",
     "webextension-polyfill": "^0.4.0"
