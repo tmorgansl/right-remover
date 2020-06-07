@@ -17,6 +17,8 @@
     "url": "https://github.com/chibat/chrome-extension-typescript-starter.git"
   },
   "dependencies": {
+    "@material-ui/core": "^4.10.1",
+    "@material-ui/icons": "^4.9.1",
     "jquery": "^3.5.0",
     "moment": "~2.24.0",
     "url-parse": "^1.4.7",
