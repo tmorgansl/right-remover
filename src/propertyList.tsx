@@ -1,8 +1,10 @@
 import * as React from "react";
 import {makeStyles} from "@material-ui/core/styles";
+import DeleteIcon from '@material-ui/icons/Delete';
+
 import {
   Avatar,
-  Checkbox,
+  IconButton,
   List,
   ListItem,
   ListItemAvatar,
@@ -20,41 +22,28 @@ const useStyles = makeStyles((theme) => ({
 
 function PropertyList({properties}) {
   const classes = useStyles();
-  const [checked, setChecked] = React.useState([1]);
-
-  const handleToggle = (value) => () => {
-    const currentIndex = checked.indexOf(value);
-    const newChecked = [...checked];
-
-    if (currentIndex === -1) {
-      newChecked.push(value);
-    } else {
-      newChecked.splice(currentIndex, 1);
-    }
-
-    setChecked(newChecked);
-  };
 
   return (
     <div>
       <List dense className={classes.root}>
-        {Object.keys(properties).map((value) => {
-          const labelId = `checkbox-list-secondary-label-${value}`;
+        {Object.keys(properties).map((id) => {
+          const labelId = `checkbox-list-secondary-label-${id}`;
+          const property = properties[id];
           return (
-            <ListItem key={value} button>
+            <ListItem key={id} button
+              onClick={() => window.open(property.url)}
+            >
               <ListItemAvatar>
                 <Avatar
-                  alt={`Avatar n°${value + 1}`}
-                  src={`/static/images/avatar/${value + 1}.jpg`}
+                  alt={`House ${id}`}
+                  src={property.imgUrl}
                 />
               </ListItemAvatar>
-              <ListItemText id={labelId} primary={`Line item ${value + 1}`} />
+              <ListItemText id={labelId} primary={property.address} />
               <ListItemSecondaryAction>
-                <Checkbox
-                  edge="end"
-                  onChange={handleToggle(value)}
-                  inputProps={{ 'aria-labelledby': labelId }}
-                />
+                <IconButton edge="end" aria-label="delete">
+                  <DeleteIcon />
+                </IconButton>
               </ListItemSecondaryAction>
             </ListItem>
           );
