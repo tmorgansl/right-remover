@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function PropertyList({properties}) {
+function PropertyList({properties, removeProperty}) {
   const classes = useStyles();
 
   return (
@@ -41,7 +41,7 @@ function PropertyList({properties}) {
               </ListItemAvatar>
               <ListItemText id={labelId} primary={property.address} />
               <ListItemSecondaryAction>
-                <IconButton edge="end" aria-label="delete">
+                <IconButton edge="end" aria-label="delete" onClick={() => removeProperty(id)}>
                   <DeleteIcon />
                 </IconButton>
               </ListItemSecondaryAction>

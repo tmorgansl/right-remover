@@ -1,7 +1,7 @@
 import * as React from "react";
 import PropertyList from "./propertyList";
 import {useEffect, useState} from "react";
-import {getProperties} from "./storage";
+import {clearProperty, getProperties} from "./storage";
 import {PropertyStore} from "./types";
 
 function App() {
@@ -13,9 +13,14 @@ function App() {
     loader();
   },[properties, setProperties])
 
+  const removeProperty = async (id: number) => {
+    await clearProperty(id);
+    setProperties(await getProperties())
+  }
+
   return (
     <div className="App">
-      <PropertyList properties={properties}/>
+      <PropertyList properties={properties} removeProperty={removeProperty}/>
     </div>
   );
 }
