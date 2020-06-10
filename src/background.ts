@@ -1,4 +1,5 @@
-import {getProperties} from "./storage";
+import {clearProperty, getProperties, saveBlockedProperty} from "./storage";
+import {Message, MessageType} from "./types";
 
 interface ApiProperty {
     id: number;
@@ -60,3 +61,17 @@ browser.webRequest.onBeforeRequest.addListener(
   {urls: ["https://www.rightmove.co.uk/api/_searchByIds*"]},
   ["blocking"]
 );
+
+browser.runtime.onMessage.addListener((msg: Message, sender, response) => {
+    switch (msg.type) {
+        case MessageType.CLEAR_PROPERTY:
+            clearProperty(msg.id).then(response);
+            break;
+        case MessageType.SAVE_BLOCKED_PROPERTY:
+            saveBlockedProperty(msg.id, msg.property).then(response);
+            break;
+        case MessageType.GET_PROPERTIES:
+            getProperties().then(p => response(p))
+            break;
+    }
+});

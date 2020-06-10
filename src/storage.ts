@@ -33,9 +33,5 @@ export const clearProperty = async (propertyID: number): Promise<void> => {
   await browser.storage.sync.set({properties});
 };
 
-export const clearAllProperties = async (): Promise<void> => {
-  await browser.storage.sync.set({properties: {}});
-};
-
 
 

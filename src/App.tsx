@@ -8,14 +8,14 @@ function App() {
   const [properties, setProperties] = useState<PropertyStore>({});
   useEffect(() => {
     const loader = async () => {
-      setProperties(await getProperties())
+      setProperties({...await getProperties()})
     }
     loader();
-  },[properties, setProperties])
+  },[])
 
   const removeProperty = async (id: number) => {
     await clearProperty(id);
-    setProperties(await getProperties())
+    setProperties({...await getProperties()})
   }
 
   return (

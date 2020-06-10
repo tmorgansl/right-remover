@@ -1,11 +1,11 @@
 import * as Url from 'url-parse';
-import {PageType, Property} from "./types";
-import {clearProperty, getProperties, saveBlockedProperty} from "./storage";
+import {Message, MessageType, PageType, Property} from "./types";
+import {getProperties} from "./storage";
 
 const HIDE_PROPERTY = "Hide Property";
 const SHOW_PROPERTY = "Show Property";
 
-getProperties().then((p) => {
+browser.runtime.sendMessage({ type: MessageType.GET_PROPERTIES }).then((p) => {
    new MutationObserver(function (mutations): void {
       mutations.some(function (mutation) {
          if (mutation.type === 'childList') {
@@ -96,7 +96,11 @@ document.addEventListener('DOMContentLoaded', async (): Promise<void> => {
 
       hidePropertyElement.addEventListener('click', async (): Promise<void> => {
          if (isHidden) {
-            await clearProperty(propertyID);
+            await browser.runtime.sendMessage<Message, void>({
+              type: MessageType.SAVE_BLOCKED_PROPERTY,
+              id: propertyID,
+            })
+
             isHidden = false;
             hidePropertyElement.textContent = HIDE_PROPERTY;
             return;
@@ -107,7 +111,13 @@ document.addEventListener('DOMContentLoaded', async (): Promise<void> => {
             address: getAddress(),
             imgUrl: getImgUrl(),
          };
-         await saveBlockedProperty(propertyID, propertyDetails);
+
+         await browser.runtime.sendMessage<Message, void>({
+            type: MessageType.SAVE_BLOCKED_PROPERTY,
+            id: propertyID,
+            property: propertyDetails,
+         })
+
          isHidden= true;
          hidePropertyElement.textContent = SHOW_PROPERTY;
       });

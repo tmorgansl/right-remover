@@ -11,6 +11,9 @@ import {
   ListItemSecondaryAction,
   ListItemText
 } from "@material-ui/core";
+import {useEffect, useState} from "react";
+import {getProperties} from "./storage";
+import {PropertyStore} from "./types";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -24,7 +27,6 @@ function PropertyList({properties, removeProperty}) {
   const classes = useStyles();
 
   return (
-    <div>
       <List dense className={classes.root}>
         {Object.keys(properties).map((id) => {
           const labelId = `checkbox-list-secondary-label-${id}`;
@@ -49,7 +51,6 @@ function PropertyList({properties, removeProperty}) {
           );
         })}
       </List>
-    </div>
   );
 }
 

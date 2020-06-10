@@ -17,3 +17,15 @@ export interface Property {
   url: string;
   imgUrl: string;
 }
+
+export enum MessageType {
+  SAVE_BLOCKED_PROPERTY = "SAVE_BLOCKED_PROPERTY",
+  CLEAR_PROPERTY = "CLEAR_PROPERTY",
+  GET_PROPERTIES = "GET_PROPERTIES"
+}
+
+export interface Message {
+  type: MessageType;
+  id?: number;
+  property?: Property;
+}
