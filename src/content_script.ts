@@ -5,6 +5,7 @@ import {getProperties} from "./storage";
 const HIDE_PROPERTY = "Hide Property";
 const SHOW_PROPERTY = "Show Property";
 
+// fails for large nodes
 browser.runtime.sendMessage({ type: MessageType.GET_PROPERTIES }).then((p) => {
    new MutationObserver(function (mutations): void {
       mutations.some(function (mutation) {

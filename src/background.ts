@@ -62,16 +62,15 @@ browser.webRequest.onBeforeRequest.addListener(
   ["blocking"]
 );
 
-browser.runtime.onMessage.addListener((msg: Message, sender, response) => {
+browser.runtime.onMessage.addListener(async (msg: Message, sender) => {
     switch (msg.type) {
         case MessageType.CLEAR_PROPERTY:
-            clearProperty(msg.id).then(response);
-            break;
+            await clearProperty(msg.id);
+            return;
         case MessageType.SAVE_BLOCKED_PROPERTY:
-            saveBlockedProperty(msg.id, msg.property).then(response);
-            break;
+            await saveBlockedProperty(msg.id, msg.property);
+            return;
         case MessageType.GET_PROPERTIES:
-            getProperties().then(p => response(p))
-            break;
+            return await getProperties();
     }
 });
