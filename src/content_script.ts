@@ -1,6 +1,5 @@
 import * as Url from 'url-parse';
-import {Message, MessageType, PageType, Property} from "./types";
-import {getProperties} from "./storage";
+import {Message, MessageType, PageType, Property, PropertyStore} from "./types";
 
 const HIDE_PROPERTY = "Hide Property";
 const SHOW_PROPERTY = "Show Property";
@@ -8,10 +7,10 @@ const SHOW_PROPERTY = "Show Property";
 // fails for large nodes
 browser.runtime.sendMessage({ type: MessageType.GET_PROPERTIES }).then((p) => {
    new MutationObserver(function (mutations): void {
-      mutations.some(function (mutation) {
+      mutations.some((mutation) => {
          if (mutation.type === 'childList') {
             return Array.prototype.some.call(mutation.addedNodes, function (addedNode) {
-               if (addedNode.localName === 'script' && addedNode.textContent.includes('window.jsonModel')) {
+               if (addedNode.localName === 'script' && addedNode.textContent.includes('window.jsonModel ')) {
                   const textContent = `var badProperties = ${JSON.stringify(p)};
      window.jsonModel.properties = window.jsonModel.properties.filter(function(p) {
       return !(p.id in badProperties);
@@ -86,8 +85,7 @@ document.addEventListener('DOMContentLoaded', async (): Promise<void> => {
       removeProperty.style["border-bottom"] = "1px dashed #dfdfe1";
       propertyActions.insertBefore(removeProperty, propertyActions.children[1]);
 
-
-      const properties = await getProperties();
+      const properties = await browser.runtime.sendMessage<Message, PropertyStore>({ type: MessageType.GET_PROPERTIES });
       let isHidden = false;
       if (propertyID in properties) {
          isHidden = true;
@@ -98,7 +96,7 @@ document.addEventListener('DOMContentLoaded', async (): Promise<void> => {
       hidePropertyElement.addEventListener('click', async (): Promise<void> => {
          if (isHidden) {
             await browser.runtime.sendMessage<Message, void>({
-              type: MessageType.SAVE_BLOCKED_PROPERTY,
+              type: MessageType.CLEAR_PROPERTY,
               id: propertyID,
             })
 

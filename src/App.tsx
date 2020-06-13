@@ -1,21 +1,23 @@
 import * as React from "react";
 import PropertyList from "./propertyList";
 import {useEffect, useState} from "react";
-import {clearProperty, getProperties} from "./storage";
-import {PropertyStore} from "./types";
+import {Message, MessageType, PropertyStore} from "./types";
 
 function App() {
   const [properties, setProperties] = useState<PropertyStore>({});
   useEffect(() => {
     const loader = async () => {
-      setProperties({...await getProperties()})
+      setProperties(await browser.runtime.sendMessage<Message, PropertyStore>({ type: MessageType.GET_PROPERTIES }))
     }
     loader();
   },[])
 
   const removeProperty = async (id: number) => {
-    await clearProperty(id);
-    setProperties({...await getProperties()})
+    await browser.runtime.sendMessage<Message, void>({
+      type: MessageType.CLEAR_PROPERTY,
+      id,
+    })
+    setProperties(await browser.runtime.sendMessage<Message, PropertyStore>({ type: MessageType.GET_PROPERTIES }))
   }
 
   return (
