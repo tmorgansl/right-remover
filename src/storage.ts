@@ -6,12 +6,11 @@ const PROPERTY_STORAGE_KEY = "properties";
 let propertyStore: PropertyStore;
 
 const getAllPropertiesFromStorage = async (): Promise<PropertyStore> => {
-  return browser.storage.sync.get(PROPERTY_STORAGE_KEY).then((pStore: { properties?: PropertyStore }) => {
-    if (pStore.properties != null) {
-      return pStore.properties;
-    }
-    return {};
-  })
+  const pStore: { properties?: PropertyStore } =  await browser.storage.sync.get(PROPERTY_STORAGE_KEY);
+  if (pStore.properties != null) {
+    return pStore.properties;
+  }
+  return {};
 };
 
 export const getProperties = async (): Promise<PropertyStore> => {
