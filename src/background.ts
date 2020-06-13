@@ -10,7 +10,7 @@ const filterProperties = async (properties: Array<ApiProperty>): Promise<Array<A
     return properties.filter(p => !(p.id in propertyStore));
 };
 
-function mapListener(details): Record<string, any> {
+const filterResponse = (details, bodyKey?: string): Record<string, void> => {
     const filter = browser.webRequest.filterResponseData(details.requestId);
     const decoder = new TextDecoder("utf-8");
     const encoder = new TextEncoder();
@@ -22,8 +22,13 @@ function mapListener(details): Record<string, any> {
     };
 
     filter.onstop = async (): Promise<void> => {
-        const body = JSON.parse(str);
-        body.properties = await filterProperties(body.properties);
+        let body = JSON.parse(str);
+        if (bodyKey != null) {
+            body[bodyKey] = await filterProperties(body[bodyKey]);
+        } else {
+            body = await filterProperties(body);
+        }
+
         filter.write(encoder.encode(JSON.stringify(body)));
         filter.disconnect();
     };
@@ -31,23 +36,12 @@ function mapListener(details): Record<string, any> {
     return {};
 }
 
+function mapListener(details): Record<string, any> {
+    return filterResponse(details, "properties")
+}
+
 function searchListener(details): Record<string, any> {
-    const filter = browser.webRequest.filterResponseData(details.requestId);
-    const decoder = new TextDecoder("utf-8");
-    const encoder = new TextEncoder();
-
-    let str = '';
-    filter.ondata = (event): void => {
-        str += decoder.decode(event.data, {stream: false});
-    };
-
-    filter.onstop = async (): Promise<void> => {
-        const body = await filterProperties(JSON.parse(str));
-        filter.write(encoder.encode(JSON.stringify(body)));
-        filter.disconnect();
-    };
-
-    return {};
+    return filterResponse(details)
 }
 
 browser.webRequest.onBeforeRequest.addListener(
@@ -62,7 +56,7 @@ browser.webRequest.onBeforeRequest.addListener(
   ["blocking"]
 );
 
-browser.runtime.onMessage.addListener(async (msg: Message, sender) => {
+browser.runtime.onMessage.addListener(async (msg: Message) => {
     switch (msg.type) {
         case MessageType.CLEAR_PROPERTY:
             await clearProperty(msg.id);
