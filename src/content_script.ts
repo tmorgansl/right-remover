@@ -1,6 +1,7 @@
 import * as Url from 'url-parse';
 import {MessageType, PageType} from "./types";
 import {bindSinglePageDOM} from "./content_scriptSingleProperty";
+import {bindMapPageDOM} from "./content_scriptMap";
 
 browser.runtime.sendMessage({ type: MessageType.GET_PROPERTIES }).then((p) => {
    new MutationObserver(function (mutations): void {
@@ -48,8 +49,13 @@ document.addEventListener('DOMContentLoaded', async (): Promise<void> => {
    const url = new Url(document.documentURI);
    const pageType = getPageType(url);
 
-   if (pageType == PageType.SINGLE_PROPERTY) {
-      await bindSinglePageDOM(url);
+   switch (pageType) {
+      case PageType.SINGLE_PROPERTY:
+         await bindSinglePageDOM(url);
+         return;
+      case PageType.MAP:
+         await bindMapPageDOM();
+         return;
    }
 }, true);
 
