@@ -1,28 +1,30 @@
 import * as Url from 'url-parse';
-import {MessageType, PageType} from "./types";
+import {MessageType, PageType, PropertyStore} from "./types";
 import {bindSinglePageDOM} from "./content_scriptSingleProperty";
 import {bindMapPageDOM} from "./content_scriptMap";
 
-browser.runtime.sendMessage({ type: MessageType.GET_PROPERTIES }).then((p) => {
-   new MutationObserver(function (mutations): void {
-      mutations.some((mutation) => {
-         if (mutation.type === 'childList') {
-            return Array.prototype.some.call(mutation.addedNodes, function (addedNode) {
-               if (addedNode.localName === 'script' && addedNode.textContent.includes('window.jsonModel ')) {
-                  const textContent = `var badProperties = ${JSON.stringify(p)};
+const mutationCallback = (p: PropertyStore) => (mutations: MutationRecord[]): void => {
+   mutations.some((mutation) => {
+      if (mutation.type === 'childList') {
+         return Array.prototype.some.call(mutation.addedNodes, function (addedNode) {
+            if (addedNode.localName === 'script' && addedNode.textContent.includes('window.jsonModel ') && addedNode.textContent.endsWith('}')) {
+               const textContent = `var badProperties = ${JSON.stringify(p)};
      window.jsonModel.properties = window.jsonModel.properties.filter(function(p) {
       return !(p.id in badProperties);
-     });`;
-                  addedNode.textContent += ";" + textContent;
-                  return true;
-               }
+     })`;
+               addedNode.textContent += ";" + textContent;
+               return true;
+            }
 
-               return false;
-            });
-         }
-         return false;
-      });
-   }).observe(document, {
+            return false;
+         });
+      }
+      return false;
+   });
+}
+
+browser.runtime.sendMessage({ type: MessageType.GET_PROPERTIES }).then((p) => {
+   new MutationObserver(mutationCallback(p)).observe(document, {
       attributes: false,
       attributeOldValue: false,
       characterData: false,

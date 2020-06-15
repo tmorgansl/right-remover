@@ -1,9 +1,31 @@
+const HIDE_PROPERTY_CLASSNAME = "hidePropertyToggle";
+
+const addHidePropertyToggle = (parent: Element): void => {
+  const hidePropertyElement = document.createElement("a");
+  hidePropertyElement.textContent = "hello";
+  hidePropertyElement.className = HIDE_PROPERTY_CLASSNAME;
+
+  const linkButton = parent.querySelector(".expPropCardPropertyLinkButton");
+  linkButton.appendChild(hidePropertyElement);
+}
+
 const mutationCallback = (mutationsList: MutationRecord[]): void => {
-  const isActive = document.querySelector(".isActive");
   for(const mutation of mutationsList) {
-    if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-      if (mutation.target.isSameNode(isActive)) {
-        console.log('called!')
+    const target = mutation.target as Element;
+    if (target.className.includes("isActive")) {
+      switch (mutation.type) {
+        case "childList":
+          mutation.removedNodes.forEach((n: Element) => {
+            if (n.className.includes("expandedPropertyCard-placeholder")) {
+              addHidePropertyToggle(target);
+            }
+          })
+          break;
+        case "attributes":
+          if (mutation.attributeName === 'class' && target.querySelector(".expandedPropertyCard-placeholder") == null && target.querySelector("."+HIDE_PROPERTY_CLASSNAME) == null) {
+            addHidePropertyToggle(target);
+          }
+          break;
       }
     }
   }
@@ -11,5 +33,5 @@ const mutationCallback = (mutationsList: MutationRecord[]): void => {
 
 export const bindMapPageDOM = async (): Promise<void> => {
   const sidePanel = document.querySelector(".mapSidePanel");
-  new MutationObserver(mutationCallback).observe(sidePanel, { attributes: true })
+  new MutationObserver(mutationCallback).observe(sidePanel, { attributes: true, childList: true, subtree:true })
 }
