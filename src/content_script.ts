@@ -21,7 +21,7 @@ const mutationCallback = (p: PropertyStore) => (mutations: MutationRecord[]): vo
       }
       return false;
    });
-}
+};
 
 browser.runtime.sendMessage({ type: MessageType.GET_PROPERTIES }).then((p) => {
    new MutationObserver(mutationCallback(p)).observe(document, {

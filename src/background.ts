@@ -34,14 +34,14 @@ const filterResponse = (details, bodyKey?: string): Record<string, void> => {
     };
 
     return {};
-}
+};
 
 function mapListener(details): Record<string, any> {
-    return filterResponse(details, "properties")
+    return filterResponse(details, "properties");
 }
 
 function searchListener(details): Record<string, any> {
-    return filterResponse(details)
+    return filterResponse(details);
 }
 
 browser.webRequest.onBeforeRequest.addListener(

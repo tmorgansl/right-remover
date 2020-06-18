@@ -17,6 +17,7 @@
   ],
   "rules": {
     "@typescript-eslint/no-explicit-any": 0,
-    "require-atomic-updates": "off"
+    "require-atomic-updates": "off",
+    "semi": [2, "always"]
   }
 }

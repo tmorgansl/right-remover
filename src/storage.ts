@@ -15,7 +15,7 @@ const getAllPropertiesFromStorage = async (): Promise<PropertyStore> => {
 
 export const getProperties = async (): Promise<PropertyStore> => {
   if (propertyStore == null) {
-    propertyStore = await getAllPropertiesFromStorage()
+    propertyStore = await getAllPropertiesFromStorage();
   }
   return propertyStore;
 };
