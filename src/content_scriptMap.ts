@@ -1,11 +1,16 @@
-import {HIDE_PROPERTY, HIDE_PROPERTY_CLASSNAME} from "./constants";
+import {HIDE_PROPERTY_CLASSNAME} from "./constants";
+import {bindButtonEventListener, getPropertyID} from "./utils";
+import * as Url from "url-parse";
 
 const addHidePropertyToggle = (parent: Element): void => {
   const linkButton = parent.querySelector(".expPropCardPropertyLinkButton");
+  const path = linkButton.querySelector(".button--primary").getAttribute("href");
+  const url = new Url(window.location.protocol + "//" + window.location.host + path);
+  const propertyID = getPropertyID(url);
   const hidePropertyElement = document.createElement("a");
-  hidePropertyElement.textContent = HIDE_PROPERTY;
   hidePropertyElement.className = HIDE_PROPERTY_CLASSNAME + " button button--full";
   linkButton.appendChild(hidePropertyElement);
+  bindButtonEventListener(url, propertyID, hidePropertyElement).then();
 };
 
 const mutationCallback = (mutationsList: MutationRecord[]): void => {
