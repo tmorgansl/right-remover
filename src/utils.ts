@@ -2,22 +2,6 @@ import * as Url from "url-parse";
 import {HIDE_PROPERTY, SHOW_PROPERTY} from "./constants";
 import {Message, MessageType, Property, PropertyStore} from "./types";
 
-const getAddress = (): string => {
-  const text = document.querySelector('.property-header-bedroom-and-price').querySelector('address').textContent;
-  if (text == null) {
-    return "invalid_address";
-  }
-  return text.replace(/\n/g, ' ');
-};
-
-const getImgUrl = (): string => {
-  const url = document.querySelector('.js-gallery-main').getAttribute('src');
-  if (url == null) {
-    return 'https://img.icons8.com/officel/40/000000/cottage.png';
-  }
-  return url;
-};
-
 export const getPropertyID = (url: Url): number => {
   const path = url.pathname;
   return parseInt(path.substring(
@@ -26,7 +10,7 @@ export const getPropertyID = (url: Url): number => {
   ), 10);
 };
 
-export const bindButtonEventListener = async (url: Url, propertyID: number, hidePropertyElement: Element): Promise<void> => {
+export const bindButtonEventListener = async (url: Url, propertyID: number, hidePropertyElement: Element, addressProvider: () => string, imageProvider: () => string): Promise<void> => {
   let isHidden = false;
 
   const togglePropertyState = (): void => {
@@ -54,8 +38,8 @@ export const bindButtonEventListener = async (url: Url, propertyID: number, hide
 
     const propertyDetails: Property = {
       url: url.toString(),
-      address: getAddress(),
-      imgUrl: getImgUrl(),
+      address: addressProvider(),
+      imgUrl: imageProvider(),
     };
 
     await browser.runtime.sendMessage<Message, void>({
