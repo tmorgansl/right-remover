@@ -36,22 +36,14 @@ const filterResponse = (details, bodyKey?: string): Record<string, void> => {
     return {};
 };
 
-function mapListener(details): Record<string, any> {
-    return filterResponse(details, "properties");
-}
-
-function searchListener(details): Record<string, any> {
-    return filterResponse(details);
-}
-
 browser.webRequest.onBeforeRequest.addListener(
-  mapListener,
+  (details) => filterResponse(details, "properties"),
   {urls: ["https://www.rightmove.co.uk/api/_mapSearch*"]},
   ["blocking"]
 );
 
 browser.webRequest.onBeforeRequest.addListener(
-  searchListener,
+  (details) => filterResponse(details),
   {urls: ["https://www.rightmove.co.uk/api/_searchByIds*"]},
   ["blocking"]
 );

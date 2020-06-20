@@ -3,7 +3,7 @@ import {makeStyles} from "@material-ui/core/styles";
 import DeleteIcon from '@material-ui/icons/Delete';
 
 import {
-  Avatar,
+  Avatar, Container,
   IconButton,
   List,
   ListItem,
@@ -11,20 +11,20 @@ import {
   ListItemSecondaryAction,
   ListItemText
 } from "@material-ui/core";
-import {useEffect, useState} from "react";
-import {getProperties} from "./storage";
-import {PropertyStore} from "./types";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    width: '100%',
-    maxWidth: 360,
+    width: 360,
     backgroundColor: theme.palette.background.paper,
   },
 }));
 
 function PropertyList({properties, removeProperty}) {
   const classes = useStyles();
+
+  if (Object.keys(properties).length == 0) {
+    return <Container fixed>Nothing to see here!</Container>
+  }
 
   return (
       <List dense className={classes.root}>
