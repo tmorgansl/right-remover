@@ -5,11 +5,11 @@
 
 A firefox extension for hiding properties on [rightmove.co.uk](https://www.rightmove.co.uk/) you no longer want to see anymore.
 
+[![](review/firefox-badge.png)](https://addons.mozilla.org/en-GB/firefox/addon/right-remover/)
+
 ![](demo.gif)
 
-Listing on the firefox add-ons store is (hopefully) coming very soon!
-
-## Why not chrome?
+## Why no chrome version?
 
 Unfortunately this extension uses an API which is currently not supported in chrome or chromium-based browsers. 
 Please see [MDN](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/webRequest/filterResponseData) and the [chromium issue tracker](https://bugs.chromium.org/p/chromium/issues/detail?id=487422) for more details.
