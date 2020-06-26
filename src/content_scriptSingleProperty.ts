@@ -23,8 +23,14 @@ export const bindSinglePageDOM = async (url: Url): Promise<void> => {
   const removeProperty = document.createElement("li");
   const hidePropertyElement = document.createElement("a");
   hidePropertyElement.style.cssText = "cursor:pointer;";
+  const icon = document.createElement("img");
+  icon.src = browser.extension.getURL("show.png");
+  icon.style.cssText = "padding-right:10px;";
+  icon.width = 20;
+  icon.height = 20;
 
   removeProperty.className = "bdr-b";
+  removeProperty.appendChild(icon);
   removeProperty.appendChild(hidePropertyElement);
   removeProperty.style["border-bottom"] = "1px dashed #dfdfe1";
   propertyActions.insertBefore(removeProperty, propertyActions.children[1]);
