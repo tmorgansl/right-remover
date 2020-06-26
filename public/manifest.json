@@ -39,5 +39,9 @@
     "gecko": {
       "id": "right-remover@example.com"
     }
+  },
+
+  "icons": {
+    "128": "icon_128.png"
   }
 }
