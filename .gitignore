@@ -3,3 +3,6 @@ node_modules/
 dist/
 tmp/
 .idea
+addon.zip
+source.zip
+README

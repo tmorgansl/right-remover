@@ -1,0 +1,15 @@
+Instructions for Addon review process:-
+
+Dependencies:-
+* npm NPM_VERSION
+* node NODE_VERSION
+
+Built using linux ubuntu 20.04
+
+Installation:-
+
+run the script `build.sh`. The extension's build is outputted to the dist/ directory
+
+
+
+
